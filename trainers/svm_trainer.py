@@ -21,7 +21,8 @@ import joblib
 
 from constants import (
     SEED,
-    TFID_MAX_FEATURES,
+    TFID_MAX_FEATURES_MONOLINGUAL,
+    TFID_MAX_FEATURES_MULTILINGUAL,
     NUMBER_OF_TRIALS,
     LANGUAGES_DICT,
     DUTCH,
@@ -44,13 +45,13 @@ MODEL = "svm"
 
 # Paths to store model
 PATHS = {
-    "en": f"/{CURRENT_DIRECTORY}/{MODEL}/en-{MODEL}",
-    "it": f"/{CURRENT_DIRECTORY}/{MODEL}/it-{MODEL}",
-    "nl": f"/{CURRENT_DIRECTORY}/{MODEL}/nl-{MODEL}",
-    "it-en": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-it-en",
-    "it-nl": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-it-nl",
-    "nl-en": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-nl-en",
-    "en-it-nl": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-all",
+    "en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/en-{MODEL}",
+    "it": f"/{CURRENT_DIRECTORY}/results/{MODEL}/it-{MODEL}",
+    "nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/nl-{MODEL}",
+    "it-en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-it-en",
+    "it-nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-it-nl",
+    "nl-en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-nl-en",
+    "en-it-nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-all",
 }
 
 
@@ -72,13 +73,13 @@ def get_output_path(langs: str, model_type: str) -> str:
         return None
 
     if langs == "en" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     if langs == "nl" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     if langs == "it" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     output_path = PATHS[langs] if langs in PATHS else None
 
@@ -99,17 +100,22 @@ def get_training_data(dataset: pd.DataFrame, list_languages: list):
   """
 
     # Use selected languages for training and testing
-    data_training = dataset[dataset["lang"].isin(list_languages)]
+    dataset = dataset[dataset["lang"].isin(list_languages)]
 
-    x = [text for text in data_training["article_title_preprocessed"].values.ravel().astype(str)]
-    y = [label for label in data_training["is_sarcastic"].values.ravel().astype(int)]
+    x = [text for text in dataset["article_title"].values.ravel().astype(str)]
+    y = [label for label in dataset["is_sarcastic"].values.ravel().astype(int)]
 
-    # Training and testing data
-    x, x_val, y, y_val = train_test_split(
-        x, y, test_size=0.2, stratify=y, random_state=SEED
+    # Training and test data
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.10, stratify=y, random_state=SEED
     )
 
-    return x, x_val, y, y_val, data_training
+    # Train and validation data
+    x_train, x_val, y_train, y_val = train_test_split(
+        x_train, y_train, test_size=0.10, stratify=y_train, random_state=SEED
+    )
+
+    return x_train, x_val, y_train, y_val, x_test, y_test, dataset
 
 
 # Model creator
@@ -160,9 +166,9 @@ def train_model(model_langs: list, model_type: str):
     model_type (str): Type of the model
   """
 
-    # Read csv with training data - dataset has been already preprocessed using data_preprocessing() from preprocess_training_data.py
+    # Read csv with training data - dataset has been already preprocessed using data_preprocessing() from data_preprocessing.py
     data_df = pd.read_csv(
-        f"/{TRAINING_DATA_PATH}/multilingual_data_set_preprocessed.csv"
+        f"/{TRAINING_DATA_PATH}/multilang_sarcasm_dataset_preprocessed.csv"
     )
     data_df = data_df.sample(frac=1).reset_index(drop=True)
 
@@ -181,22 +187,39 @@ def train_model(model_langs: list, model_type: str):
         )
 
     # Get training data and testing data
-    x, x_val, y, y_val, data_training = get_training_data(
-        dataset=data_df, list_languages=languages,
+    x_train, x_val, y_train, y_val, x_test, y_test, data_training = get_training_data(
+        dataset=data_df, list_languages=languages
+    )
+
+    data_lengths = {
+        "training_data_size": len(x_train),
+        "evaluation_data_size": len(x_val),
+        "test_data_size": len(x_test),
+    }
+
+    # Save training / evaluation / test set sizes
+    with open(f".{output_path}/training_test_data_size.json", "w") as file_output:
+        json.dump(data_lengths, file_output)
+
+    max_features = (
+        TFID_MAX_FEATURES_MONOLINGUAL
+        if model_type != "multilingual"
+        else TFID_MAX_FEATURES_MULTILINGUAL
     )
 
     # TF-IDF Transform
-    tfidf_vect = TfidfVectorizer(max_features=TFID_MAX_FEATURES)
-    tfidf_vect.fit(data_training["article_title_preprocessed"])
-    x = tfidf_vect.transform(x)
+    tfidf_vect = TfidfVectorizer(max_features=max_features)
+    tfidf_vect.fit(data_training["article_title"])
+    x_train = tfidf_vect.transform(x_train)
     x_val = tfidf_vect.transform(x_val)
+    x_test = tfidf_vect.transform(x_test)
 
     # Objective function
     def objective(trial) -> float:
 
         # Fitting model
         model = create_model(trial)
-        model.fit(x, y)
+        model.fit(x_train, y_train)
 
         # Evaluate performance
         performance = model_performance(model=model, x_val=x_val, y_val=y_val)
@@ -214,20 +237,19 @@ def train_model(model_langs: list, model_type: str):
 
     # Get best model
     best_model = create_model(study.best_trial)
-    best_model.fit(x, y)
+    best_model.fit(x_train, y_train)
 
-    # Retrieve best hyperparameters and save
-    best_hyperparams = study.best_trial.params
+    # Save best hyperparameters
     with open(f".{output_path}/hyperparameters.json", "w") as file_output:
-        json.dump(best_hyperparams, file_output)
+        json.dump(study.best_trial.params, file_output)
 
     # Save best model
     filename = f"svm_{langs}_{model_type}.sav"
     joblib.dump(best_model, f".{output_path}/{filename}")
 
-    # Get all evaluation metrics for best model X_val: str, y_val: int,
+    # Get all evaluation metrics for best model on test set
     accuracy, precision, recall, f1_score = model_performance(
-        model=best_model, x_val=x_val, y_val=y_val, return_all=True
+        model=best_model, x_val=x_test, y_val=y_test, return_all=True
     )
 
     scores = {
