@@ -7,10 +7,10 @@ This is a multilingual sarcasm detection model trained on news article titles fr
  
  The dataset generated utilizes both news articles from actual news sources (The Huffington Post (en), NOS (nl), Il Giornale (it)) and news articles from sarcastic/satirical news sources (The Onion (en), De Speld (nl), Lercio (it)). The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
 
-The repository contains trainers for:
-    * 1) Monolingual BERT and SVM classifier models in English, Dutch and Italian
-    * 2) Multilingual BERT and SVM classifier models for English + Dutch + Italian
-    * 3) Multilingual subset BERT models where one or two languages are used in training, and the remaining languages are utilized in testing to evaluate cross-lingual transfer capability of mBERT in sarcasm detection task
+Markup : 1. The repository contains trainers for:
+            1. Monolingual BERT and SVM classifier models in English, Dutch and Italian
+            2. Multilingual BERT and SVM classifier models for English + Dutch + Italian
+            3. Multilingual subset BERT models where one or two languages are used in training, and the remaining languages are utilized in testing to evaluate cross-lingual transfer capability of mBERT in sarcasm detection task
 
 In particular, the results of the research highlight the capability of both monolingual as well as multilingual models in sarcasm detection task. Moreover, the from the findings we can observe that in multilingual setting, the models perform well on languages that have also been including in training set but the mBERT struggles with cross-lingual transfer in sarcasm detection task, and therefore there is a significant drop in performance when utilizing a subset multilingual models on unseen languages that have been excluded from training.
 
@@ -34,7 +34,7 @@ multilingual-svm-all | 77.79
 Performance of the subset sarcasm detection models based in bert-base-multilingual-uncased:
 
 Model                                  | Language trained | Languages tested |  F1 trained | F1 tested 
----------------------------------------- | :-------------: | :----------------:
+---------------------------------------- | :-------------: | :----------------: | :----------------: | :----------------:
 multilingual-it | it | nl, en | 90.23 | **70.17**
 multilingual-nl | nl | it, nl | 86.54 | 65.54
 multilingual-en | en | nl, it |  90.68 | 58.67
