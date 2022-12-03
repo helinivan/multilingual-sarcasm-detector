@@ -49,13 +49,13 @@ MODEL = "bert"
 
 # Paths to store model
 PATHS = {
-    "en": f"/{CURRENT_DIRECTORY}/{MODEL}/en-{MODEL}",
-    "it": f"/{CURRENT_DIRECTORY}/{MODEL}/it-{MODEL}",
-    "nl": f"/{CURRENT_DIRECTORY}/{MODEL}/nl-{MODEL}",
-    "it-en": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-it-en",
-    "it-nl": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-it-nl",
-    "nl-en": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-nl-en",
-    "en-it-nl": f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-all",
+    "en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/en-{MODEL}",
+    "it": f"/{CURRENT_DIRECTORY}/results/{MODEL}/it-{MODEL}",
+    "nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/nl-{MODEL}",
+    "it-en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-it-en",
+    "it-nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-it-nl",
+    "nl-en": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-nl-en",
+    "en-it-nl": f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-all",
 }
 
 
@@ -118,13 +118,13 @@ def get_output_path(langs: str, model_type: str) -> str:
         return None
 
     if langs == "en" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     if langs == "nl" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     if langs == "it" and model_type == "multilingual":
-        return f"/{CURRENT_DIRECTORY}/{MODEL}/m-{MODEL}-{langs}"
+        return f"/{CURRENT_DIRECTORY}/results/{MODEL}/m-{MODEL}-{langs}"
 
     output_path = PATHS[langs] if langs in PATHS else None
 
@@ -164,6 +164,7 @@ def get_training_data(
             label for label in data_training["is_sarcastic"].values.ravel().astype(int)
         ]
 
+        # Testing data
         x_test = [
             text for text in data_testing["article_title"].values.ravel().astype(str)
         ]
@@ -171,14 +172,9 @@ def get_training_data(
             label for label in data_testing["is_sarcastic"].values.ravel().astype(int)
         ]
 
-        # Training data
-        x, _, y, _ = train_test_split(
-            x_train, y_train, test_size=0.01, random_state=SEED
-        )
-
-        # Testing data
-        _, x_val, _, y_val = train_test_split(
-            x_test, y_test, test_size=0.99, random_state=SEED
+        # Training / validation data split
+        x_train, x_val, y_train, y_val = train_test_split(
+            x_train, y_train, test_size=0.10, stratify=y_train, random_state=SEED
         )
 
     else:
@@ -189,12 +185,17 @@ def get_training_data(
         x = [text for text in dataset["article_title"].values.ravel().astype(str)]
         y = [label for label in dataset["is_sarcastic"].values.ravel().astype(int)]
 
-        # Training and testing data
-        x, x_val, y, y_val = train_test_split(
+        # Training / test data split
+        x_train, x_test, y_train, y_test = train_test_split(
             x, y, test_size=0.10, stratify=y, random_state=SEED
         )
 
-    return x, x_val, y, y_val
+        # Training / validation data split
+        x_train, x_val, y_train, y_val = train_test_split(
+            x_train, y_train, test_size=0.10, stratify=y_train, random_state=SEED
+        )
+
+    return x_train, x_val, y_train, y_val, x_test, y_test
 
 
 # Hyperparameter tuning
@@ -224,13 +225,15 @@ def train_model(
                                    utilized as test set, default is False
   """
     # Read csv with training data
-    data_df = pd.read_csv(
-        "/content/drive/MyDrive/thesis_data/training_data/multilingual_data_set_preprocessed.csv"
-    )
+    data_df = pd.read_csv(f"{TRAINING_DATA_PATH}/multilingual_data_set.csv")
     data_df = data_df.sample(frac=1).reset_index(drop=True)
 
     # Define languages and model output path
-    languages = [LANGUAGES_DICT[language_name]for language_name in model_langs if language_name in LANGUAGES_DICT]
+    languages = [
+        LANGUAGES_DICT[language_name]
+        for language_name in model_langs
+        if language_name in LANGUAGES_DICT
+    ]
     langs = "-".join(languages) if languages else None
     output_path = get_output_path(langs=langs, model_type=model_type)
 
@@ -240,11 +243,21 @@ def train_model(
         )
 
     # Get training data and testing data
-    x, x_val, y, y_val = get_training_data(
+    x_train, x_val, y_train, y_val, x_test, y_test = get_training_data(
         dataset=data_df,
         list_languages=languages,
         excluded_langs_as_test=excluded_langs_as_test,
     )
+
+    data_lengths = {
+        "training_data_size": len(x_train),
+        "evaluation_data_size": len(x_val),
+        "test_data_size": len(x_test),
+    }
+
+    # Save best training / evaluation / test set sizes
+    with open(f".{output_path}/training_test_data_size.json", "w") as file_output:
+        json.dump(data_lengths, file_output)
 
     # Define pre-trained model
     def model_init():
@@ -253,16 +266,20 @@ def train_model(
     # Define pre-trained tokenizer
     tokenizer = BertTokenizer.from_pretrained(model_type)
 
+    # Tokenize training / validation / sets
     x_train_tokenized = tokenizer(
-        x, padding=True, truncation=True, max_length=MAX_LENGTH
+        x_train, padding=True, truncation=True, max_length=MAX_LENGTH
     )
-
     x_val_tokenized = tokenizer(
         x_val, padding=True, truncation=True, max_length=MAX_LENGTH
     )
+    x_test_tokenized = tokenizer(
+        x_test, padding=True, truncation=True, max_length=MAX_LENGTH
+    )
 
-    train_dataset = Dataset(x_train_tokenized, y)
+    train_dataset = Dataset(x_train_tokenized, y_train)
     eval_dataset = Dataset(x_val_tokenized, y_val)
+    test_dataset = Dataset(x_test_tokenized, y_test)
 
     # Define inputs for Training Args
     args_inputs = {
@@ -301,8 +318,8 @@ def train_model(
 
     # Hyperparameter search
     best_trial = trainer.hyperparameter_search(
-        # Use value 'maximize' to optimize for F1 score
-        direction="maximize",
+        # Use value 'minimize' to optimize for validation loss
+        direction="minimize",
         n_trials=NUMBER_OF_TRIALS,
         sampler=optuna.samplers.TPESampler(),
         hp_space=hyperparameter_space,
@@ -323,35 +340,61 @@ def train_model(
     with open(f".{output_path}/hyperparameters.json", "w") as file_output:
         json.dump(best_hyperparams, file_output)
 
-    # Evaluate performance
-    raw_pred, _, _ = trainer.predict(eval_dataset)
+    # Evaluate performance on evaluation set
+    raw_pred_eval, _, _ = trainer.predict(eval_dataset)
 
-    # Preprocess raw predictions
-    y_pred = np.argmax(raw_pred, axis=1)
+    # Evaluate performance on test_set
+    raw_pred_test, _, _ = trainer.predict(test_dataset)
 
-    # Get Precision, Recall, F1 score
-    precision, recall, f1, _ = precision_recall_fscore_support(
-        y_true=y_val,
-        y_pred=y_pred,
-        beta=1.0,
-        average="macro",
-        warn_for=tuple(),
-        zero_division=0,
-    )
+    # Preprocess raw eval predictions
+    eval_labels = np.argmax(raw_pred_eval, axis=1)
 
-    # Get accuracy
-    accuracy = accuracy_score(y_true=y_val, y_pred=y_pred)
+    # Preprocess raw test predictions
+    test_labels = np.argmax(raw_pred_test, axis=1)
 
-    scores = {
-        "precision": precision,
-        "recall": recall,
-        "f1": f1,
-        "accuracy": accuracy,
-    }
+    for pred_labels, true_labels, labels_name in zip(
+        [test_labels, eval_labels], [y_test, y_val], ["test", "eval"]
+    ):
 
-    # Save scores
-    with open(f".{output_path}/scores.json", "w") as file_output:
-        json.dump(scores, file_output)
+        # Get Precision, Recall, F1 score
+        precision, recall, f1, _ = precision_recall_fscore_support(
+            y_true=true_labels,
+            y_pred=pred_labels,
+            beta=1.0,
+            average="macro",
+            warn_for=tuple(),
+            zero_division=0,
+        )
+
+        # Get accuracy
+        accuracy = accuracy_score(y_true=true_labels, y_pred=pred_labels)
+
+        scores = {
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+            "accuracy": accuracy,
+        }
+
+        # Create confusion matrix
+        conf_matrix = confusion_matrix(true_labels, pred_labels).ravel()
+
+        confusion_matrix_dict = {
+            "true_negative": int(conf_matrix[0]),
+            "false_positive": int(conf_matrix[1]),
+            "false_negative": int(conf_matrix[2]),
+            "true_positive": int(conf_matrix[3]),
+        }
+
+        # Save confusion matrix
+        with open(
+            f".{output_path}/confusion_matrix_{labels_name}.json", "w"
+        ) as file_output:
+            json.dump(confusion_matrix_dict, file_output)
+
+        # Save scores
+        with open(f".{output_path}/scores_{labels_name}.json", "w") as file_output:
+            json.dump(scores, file_output)
 
 
 if __name__ == "__main__":
