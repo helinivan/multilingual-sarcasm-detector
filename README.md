@@ -2,20 +2,19 @@
 
 This is a multilingual sarcasm detection model trained on news article titles from news papers in English, Dutch and Italian.
 
- The models in this repository demonstrate that we can achieve state-of-the-art performance in sarcasm detection task by utilizing BERT and news article titles, where the news article titles are either gathered from publicly available datasets or scraped directly from the newspaper websites. BERT model utilizing English news articles achieved a F1-score of 92%, whereas a mBERT model utilizing all news articles from English, Dutch and Italian achieved a F1-score of 87%
+The models in this repository demonstrate that we can achieve state-of-the-art performance in sarcasm detection task by utilizing BERT and news article titles. BERT model utilizing English news articles achieved a F1-score of **92%**, whereas a mBERT model utilizing all news articles from English, Dutch and Italian achieved a F1-score of **87%**
  
+The dataset generated utilizes both news articles from actual news sources, and news articles from sarcastic/satirical news sources. News article titles are either gathered from publicly available datasets or scraped directly from the newspaper websites. 
  
- The dataset generated utilizes both news articles from actual news sources (The Huffington Post (en), NOS (nl), Il Giornale (it)) and news articles from sarcastic/satirical news sources (The Onion (en), De Speld (nl), Lercio (it)). 
- 
- The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
+The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
 
-```
+
 The repository contains trainers for:
-
+```
 1. Monolingual BERT and SVM classifier models in English, Dutch and Italian
 2. Multilingual BERT and SVM classifier models for English + Dutch + Italian
 3. Multilingual subset BERT models where one or two languages are used in training,
-and the remaining languages are utilized in testing
+   and the remaining languages are utilized in testing
 ```
 
 ## Evaluation
@@ -34,7 +33,7 @@ monolingual-svm-nl |  75.52
 Performance of the multilingual sarcasm detection models:
 
 Model                                   | F1 
----------------------------------------- | :-------------: 
+-------------------------------------| :-----: 
 multilingual-bert-all |  **87.23** 
 multilingual-svm-all | 77.79 
 
