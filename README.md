@@ -30,8 +30,6 @@ monolingual-bert-nl | 83.02
 monolingual-svm-en | 81.04
 monolingual-svm-it | 76.36
 monolingual-svm-nl |  75.52
-multilingual-bert-all |  **87.23** 
-multilingual-svm-all | 77.79
 
 Performance of the multilingual sarcasm detection models:
 
