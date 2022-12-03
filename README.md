@@ -7,15 +7,14 @@ This is a multilingual sarcasm detection model trained on news article titles fr
  
  The dataset generated utilizes both news articles from actual news sources (The Huffington Post (en), NOS (nl), Il Giornale (it)) and news articles from sarcastic/satirical news sources (The Onion (en), De Speld (nl), Lercio (it)). The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
 
+```
 Markup : 1. The repository contains trainers for:
             1. Monolingual BERT and SVM classifier models in English, Dutch and Italian
             2. Multilingual BERT and SVM classifier models for English + Dutch + Italian
             3. Multilingual subset BERT models where one or two languages are used in training, and the remaining languages are utilized in testing to evaluate cross-lingual transfer capability of mBERT in sarcasm detection task
+```
 
-In particular, the results of the research highlight the capability of both monolingual as well as multilingual models in sarcasm detection task. Moreover, the from the findings we can observe that in multilingual setting, the models perform well on languages that have also been including in training set but the mBERT struggles with cross-lingual transfer in sarcasm detection task, and therefore there is a significant drop in performance when utilizing a subset multilingual models on unseen languages that have been excluded from training.
-
-
-## Evaluation:
+## Evaluation
 
 Performance of the monolingual and multilingual sarcasm detection models:
 
@@ -30,6 +29,8 @@ monolingual-svm-nl |  75.52
 multilingual-bert-all |  **87.23** 
 multilingual-svm-all | 77.79
 
+In particular, the results of the research highlight the capability of both monolingual as well as multilingual models in sarcasm detection task. Moreover, the from the findings we can observe that in multilingual setting, the models perform well on languages that have also been including in training set but the mBERT struggles with cross-lingual transfer in sarcasm detection task, and therefore there is a significant drop in performance when utilizing a subset multilingual models on unseen languages that have been excluded from training.
+
 
 Performance of the subset sarcasm detection models based in bert-base-multilingual-uncased:
 
@@ -43,7 +44,7 @@ multilingual-en-nl | en, nl | it | 90.47 | 70.08
 multilingual-en-it | en, it | nl | 89.96 | 65.90
 
 
-## Setup:
+## Setup
 
 The `requirements.txt` file includes all necessary dependencies to run the code of this repository.
 
