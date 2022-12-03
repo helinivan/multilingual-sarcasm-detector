@@ -168,7 +168,7 @@ def train_model(model_langs: list, model_type: str):
 
     # Read csv with training data - dataset has been already preprocessed using data_preprocessing() from data_preprocessing.py
     data_df = pd.read_csv(
-        f"/{TRAINING_DATA_PATH}/multilingual_data_set_preprocessed.csv"
+        f"/{TRAINING_DATA_PATH}/multilang_sarcasm_dataset_preprocessed.csv"
     )
     data_df = data_df.sample(frac=1).reset_index(drop=True)
 

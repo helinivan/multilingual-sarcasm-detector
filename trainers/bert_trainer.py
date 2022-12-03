@@ -225,7 +225,7 @@ def train_model(
                                    utilized as test set, default is False
   """
     # Read csv with training data
-    data_df = pd.read_csv(f"{TRAINING_DATA_PATH}/multilingual_data_set.csv")
+    data_df = pd.read_csv(f"{TRAINING_DATA_PATH}/multilang_sarcasm_dataset.csv")
     data_df = data_df.sample(frac=1).reset_index(drop=True)
 
     # Define languages and model output path

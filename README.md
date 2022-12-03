@@ -5,7 +5,9 @@ This is a multilingual sarcasm detection model trained on news article titles fr
  The models in this repository demonstrate that we can achieve state-of-the-art performance in sarcasm detection task by utilizing BERT and news article titles, where the news article titles are either gathered from publicly available datasets or scraped directly from the newspaper websites. BERT model utilizing English news articles achieved a F1-score of 92%, whereas a mBERT model utilizing all news articles from English, Dutch and Italian achieved a F1-score of 87%
  
  
- The dataset generated utilizes both news articles from actual news sources (The Huffington Post (en), NOS (nl), Il Giornale (it)) and news articles from sarcastic/satirical news sources (The Onion (en), De Speld (nl), Lercio (it)). The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
+ The dataset generated utilizes both news articles from actual news sources (The Huffington Post (en), NOS (nl), Il Giornale (it)) and news articles from sarcastic/satirical news sources (The Onion (en), De Speld (nl), Lercio (it)). 
+ 
+ The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
 
 ```
 The repository contains trainers for:

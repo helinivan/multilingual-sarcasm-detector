@@ -61,7 +61,7 @@ def data_preprocessing(dataset: pd.DataFrame = None) -> pd.DataFrame:
     # If input dataset not specified, load dataset from training_data folder
     if not dataset:
         dataset = pd.read_csv(
-            f"{CURRENT_DIRECTORY}/training_data/multilingual_data_set.csv"
+            f"{CURRENT_DIRECTORY}/training_data/multilang_sarcasm_dataset.csv"
         )
 
     # Lowercase
@@ -90,7 +90,7 @@ def data_preprocessing(dataset: pd.DataFrame = None) -> pd.DataFrame:
 
     # Save preprocessed dataset to training_data folder
     dataset.to_csv(
-        f"{CURRENT_DIRECTORY}/training_data/multilingual_data_set_preprocessed.csv",
+        f"{CURRENT_DIRECTORY}/training_data/multilang_sarcasm_dataset_preprocessed.csv",
         index=False,
     )
 
