@@ -6,7 +6,7 @@ The models in this repository demonstrate that we can achieve state-of-the-art p
  
 The dataset generated utilizes both news articles from actual news sources, and news articles from sarcastic/satirical news sources. News article titles are either gathered from publicly available datasets or scraped directly from the newspaper websites. 
  
-The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_dataset_multilingual).
+The multilingual sarcasm detection dataset is publicly available on [HuggingFace](https://huggingface.co/datasets/helinivan/sarcasm_headlines_multilingual).
 
 
 The repository contains trainers for:
