@@ -19,8 +19,8 @@ The repository contains trainers for:
 
 Pre-trained BERT models used:
 1. [bert-base-uncased](https://huggingface.co/bert-base-multilingual-uncased) (monolingual-bert-en)
-2. [dbmdz/bert-base-italian-uncased](https://huggingface.co/dbmdz/bert-base-italian-uncased)(monolingual-bert-it)
-3. [GroNLP/bert-base-dutch-cased](https://huggingface.co/GroNLP/bert-base-dutch-cased)(monolingual-bert-nl)
+2. [dbmdz/bert-base-italian-uncased](https://huggingface.co/dbmdz/bert-base-italian-uncased) (monolingual-bert-it)
+3. [GroNLP/bert-base-dutch-cased](https://huggingface.co/GroNLP/bert-base-dutch-cased) (monolingual-bert-nl)
 4. [bert-base-multilingual-uncased](https://huggingface.co/bert-base-multilingual-uncased) (multilingual models)
 
 ## Evaluation
