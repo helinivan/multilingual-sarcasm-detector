@@ -43,7 +43,7 @@ In particular, the results of the research highlight the capability of both mono
 
 Performance of the subset sarcasm detection models based in bert-base-multilingual-uncased:
 
-Model                                  | Language trained | Languages tested |  F1 trained | F1 tested 
+Model                                  | Languages trained | Languages tested |  F1 trained | F1 tested 
 ---------------------------------------- | :-------------: | :----------------: | :----------------: | :----------------:
 multilingual-it | it | nl, en | 90.23 | **70.17**
 multilingual-nl | nl | it, nl | 86.54 | 65.54
