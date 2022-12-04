@@ -53,6 +53,9 @@ multilingual-en-nl | en, nl | it | 90.47 | 70.08
 multilingual-en-it | en, it | nl | 89.96 | 65.90
 
 
+In folder `results`, you can find evaluation metrics on evaluation set and test set, as well as confusion matrices and best hyperparameters.
+
+
 ## Setup
 
 The `requirements.txt` file includes all necessary dependencies to run the code of this repository.
