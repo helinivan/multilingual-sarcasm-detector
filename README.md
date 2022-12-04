@@ -38,7 +38,7 @@ multilingual-bert-all |  **87.23**
 multilingual-svm-all | 77.79 
 
 
-In particular, the results of the research highlight the capability of both monolingual as well as multilingual models in sarcasm detection task. Moreover, the from the findings we can observe that in multilingual setting, the models perform well on languages that have also been including in training set but the mBERT struggles with cross-lingual transfer in sarcasm detection task, and therefore there is a significant drop in performance when utilizing a subset multilingual models on unseen languages that have been excluded from training.
+In particular, the results of the research highlight the capability of both monolingual as well as multilingual models in sarcasm detection task. Moreover, from the findings we can observe that in multilingual setting, the models perform well on languages that have also been including in training set but the mBERT struggles with cross-lingual transfer in sarcasm detection task, and therefore there is a significant drop in performance when utilizing a subset multilingual models on unseen languages that have been excluded from training.
 
 
 Performance of the subset sarcasm detection models based in bert-base-multilingual-uncased:
