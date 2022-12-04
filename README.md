@@ -80,11 +80,9 @@ python svm_trainer.py
 
 Following models are hosted on HuggingFace and publicly available:
 
-```
 1. [monolingual-bert-en](https://huggingface.co/helinivan/english-sarcasm-detector)
 2. [monolingual-bert-it](https://huggingface.co/helinivan/italian-sarcasm-detector)
 3. [monolingual-bert-nl](https://huggingface.co/helinivan/dutch-sarcasm-detector)
 4. [multilingual-bert-all](https://huggingface.co/helinivan/multilingual-sarcasm-detector)
-```
 
 In file `predict.py`, an example is provided to show how to access and load the models from HuggingFace to local machine.
