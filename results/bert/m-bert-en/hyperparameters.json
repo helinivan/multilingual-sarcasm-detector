@@ -1,0 +1,1 @@
+{"learning_rate": 7.780881816167678e-05, "per_device_train_batch_size": 64, "weight_decay": 0.4351402792445857, "optim": "adamw_hf"}
