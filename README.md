@@ -78,8 +78,11 @@ python svm_trainer.py
 
 ## Predict
 
-Monolingual BERT models and multilingual-bert-all are hosted on HuggingFace. From there, the models can be downloaded to local machine.
+Following models are hosted on HuggingFace and publicly available:
 
-In file `predict.py`, an example is provided to show how to access and call the models from HuggingFace.
+1. [monolingual-bert-en](https://huggingface.co/helinivan/english-sarcasm-detector)
+2. [monolingual-bert-it](https://huggingface.co/helinivan/italian-sarcasm-detector)
+3. [monolingual-bert-nl](https://huggingface.co/helinivan/dutch-sarcasm-detector)
+4. [multilingual-bert-all](https://huggingface.co/helinivan/multilingual-sarcasm-detector)
 
-NOTE: Access token needed as the models are privately hosted.
+In file `predict.py`, an example is provided to show how to access and load the models from HuggingFace to local machine.

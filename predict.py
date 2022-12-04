@@ -17,12 +17,9 @@ HUGGINGFACE_SARCASM_MODELS = [
 
 # Prediction example
 MODEL_PATH = "helinivan/multilingual-sarcasm-detector"
-ACCESS_TOKEN = ""
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, use_auth_token=ACCESS_TOKEN)
-model = AutoModelForSequenceClassification.from_pretrained(
-    MODEL_PATH, use_auth_token=ACCESS_TOKEN
-)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 
 text = "CIA Realizes It's Been Using Black Highlighters All These Years."
 tokenized_text = tokenizer(
