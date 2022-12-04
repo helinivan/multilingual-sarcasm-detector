@@ -242,7 +242,7 @@ def train_model(
             f"No language found from input, input langs: {model_langs}"
         )
 
-    # Get training data and testing data
+    # Get training / evaluation / testing data
     x_train, x_val, y_train, y_val, x_test, y_test = get_training_data(
         dataset=data_df,
         list_languages=languages,
@@ -255,7 +255,7 @@ def train_model(
         "test_data_size": len(x_test),
     }
 
-    # Save best training / evaluation / test set sizes
+    # Save training / evaluation / test set sizes
     with open(f".{output_path}/training_test_data_size.json", "w") as file_output:
         json.dump(data_lengths, file_output)
 
@@ -405,7 +405,7 @@ if __name__ == "__main__":
     # Measure training time
     start = time.time()
 
-    # 1. Launch training of the English BERT model - DONE
+    # 1. Launch training of the English BERT model
     train_model(model_langs=MODEL_LANGS_ENGLISH, model_type=BERT_EN)
 
     # 2. Launch training of the multilingual all languages model
