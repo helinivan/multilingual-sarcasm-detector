@@ -90,7 +90,7 @@ def data_preprocessing(dataset: pd.DataFrame = None) -> pd.DataFrame:
 
     # Save preprocessed dataset to training_data folder
     dataset.to_csv(
-        f"{CURRENT_DIRECTORY}/training_data/multilang_sarcasm_dataset_preprocessed.csv",
+        f".{CURRENT_DIRECTORY}/training_data/multilang_sarcasm_dataset_preprocessed.csv",
         index=False,
     )
 
