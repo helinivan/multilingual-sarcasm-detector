@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score,
     precision_recall_fscore_support,
+    confusion_matrix
 )
 import torch
 import optuna
@@ -17,7 +18,6 @@ from transformers import (
 import time
 import os
 import json
-
 from constants import (
     SEED,
     MAX_LENGTH,
@@ -36,6 +36,8 @@ from constants import (
     MODEL_LANGS_IT_NL,
     MODEL_LANGS_ALL,
 )
+
+from training_data.load_training_data import load_dataset_from_hf
 
 
 # SET SEEDS
@@ -398,6 +400,9 @@ def train_model(
 
 
 if __name__ == "__main__":
+
+    # Load dataset from HuggingFace
+    load_dataset_from_hf()
 
     # Make sure we are using GPU
     print(f"Utilize GPU: {torch.cuda.is_available()}")

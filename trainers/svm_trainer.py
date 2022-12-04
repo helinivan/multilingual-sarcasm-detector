@@ -35,6 +35,9 @@ from constants import (
     MODEL_LANGS_ALL,
 )
 
+from training_data.load_training_data import load_dataset_from_hf
+from preprocessing.preprocess_training_data import data_preprocessing
+
 # Set seed
 np.random.seed(SEED)
 
@@ -265,6 +268,12 @@ def train_model(model_langs: list, model_type: str):
 
 
 if __name__ == "__main__":
+
+    # Load dataset from HuggingFace
+    load_dataset_from_hf()
+
+    # Create preprocessed training data for SVM models
+    data_preprocessing()
 
     # Measure training time
     start = time.time()
